@@ -39,17 +39,6 @@ public class TelegramBot implements LongPollingUpdateConsumer {
                     } catch (TelegramApiException e) {
                         log.error("asdf");
                     }
-                } else if (update.getMessage().hasPhoto()) {
-                    SendMessage message = SendMessage.builder()
-                            .chatId(update.getMessage().getChatId().toString())
-                            .text("Ответ: " + update.getMessage().getPhoto().get(0).getFileId())
-                            .build();
-
-                    try {
-                        telegramClient.execute(message);
-                    } catch (TelegramApiException e) {
-                        log.error("asdf");
-                    }
                 } else if (update.getMessage().hasAudio()) {
                     SendMessage message = SendMessage.builder()
                             .chatId(update.getMessage().getChatId().toString())
