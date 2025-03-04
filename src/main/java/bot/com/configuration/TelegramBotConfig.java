@@ -1,12 +1,12 @@
 package bot.com.configuration;
 
-import bot.com.telegram.TelegramBot;
+import bot.com.telegram.consumer.TelegramBotConsumer;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
 @Configuration
@@ -15,12 +15,13 @@ public class TelegramBotConfig {
 
     @Value("${bot.token}")
     private String botToken;
-    private final TelegramBot telegramBot;
+    private final TelegramBotConsumer telegramBotConsumer;
 
     @Bean
-    public TelegramBotsLongPollingApplication botsApplication() throws TelegramApiException {
+    @SneakyThrows
+    public TelegramBotsLongPollingApplication botsApplication() {
         var app = new TelegramBotsLongPollingApplication();
-        app.registerBot(botToken, telegramBot);
+        app.registerBot(botToken, telegramBotConsumer);
         return app;
     }
 }
