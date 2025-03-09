@@ -1,4 +1,4 @@
-package bot.com.configuration;
+package bot.com.configuration.telegram;
 
 import bot.com.telegram.consumer.TelegramBotConsumer;
 import lombok.RequiredArgsConstructor;

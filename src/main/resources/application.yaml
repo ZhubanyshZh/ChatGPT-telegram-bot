@@ -1,3 +1,7 @@
 bot:
   name: TGBotWithSpringBot
   token: 7712287472:AAGqkJAhSHSZ7RNbAdUtv0JQu1PvpAHtMhQ
+
+telegram:
+  executor:
+    pool-size: 2
