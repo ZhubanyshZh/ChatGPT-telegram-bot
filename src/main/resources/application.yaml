@@ -1,7 +1,11 @@
 bot:
   name: TGBotWithSpringBot
-  token: 7712287472:AAGqkJAhSHSZ7RNbAdUtv0JQu1PvpAHtMhQ
+  token: "bot-token"
 
 telegram:
   executor:
     pool-size: 2
+
+chat-gpt:
+  chat-url: "https://api.openai.com/v1/chat/completions"
+  token: "gpt-token"

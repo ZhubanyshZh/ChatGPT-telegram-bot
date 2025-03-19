@@ -18,13 +18,11 @@ public class TelegramTextHandler extends TelegramBotHandler<Update> {
     @Override
     @Async("telegramExecutor")
     public void handle(Update update) {
-        if(update.getMessage().hasText()) {
-            consumeMessage("Message: " +
-                            update.getMessage().getText() + ", Chat ID: " +
-                            update.getMessage().getChatId(),
-                            update,
-                            telegramBotService::sendMessage);
-        }
+        consumeMessage("Message: " +
+                        update.getMessage().getText() + ", Chat ID: " +
+                        update.getMessage().getChatId(),
+                update,
+                telegramBotService::sendMessage);
     }
 
     @Override
