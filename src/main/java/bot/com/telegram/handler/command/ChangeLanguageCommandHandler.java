@@ -1,5 +1,7 @@
 package bot.com.telegram.handler.command;
 
+import bot.com.telegram.service.TelegramService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,7 +14,10 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ChangeLanguageCommandHandler implements CommandHandler {
+
+    private final TelegramService telegramService;
 
     @Override
     public boolean canHandle(String message) {
@@ -20,7 +25,7 @@ public class ChangeLanguageCommandHandler implements CommandHandler {
     }
 
     @Override
-    public void handle(Update update, TelegramClient telegramClient) throws TelegramApiException {
+    public void handle(Update update) {
         SendMessage message = SendMessage.builder()
                 .chatId(update.getMessage().getChatId().toString())
                 .text("*Выберите язык:*")
@@ -30,21 +35,21 @@ public class ChangeLanguageCommandHandler implements CommandHandler {
         englishLanBtn.add(
                 InlineKeyboardButton.builder()
                 .text("🇬🇧 English")
-                .callbackData("lan:english")
+                .callbackData("/EN")
                 .build());
 
         InlineKeyboardRow kazakhLanBtn = new InlineKeyboardRow();
         kazakhLanBtn.add(
                 InlineKeyboardButton.builder()
                         .text("🇰🇿 Қазақша")
-                        .callbackData("lan:kazakh")
+                        .callbackData("/KZ")
                         .build());
 
         InlineKeyboardRow russianLanBtn = new InlineKeyboardRow();
         russianLanBtn.add(
                 InlineKeyboardButton.builder()
                         .text("🇷🇺 Русский")
-                        .callbackData("lan:russian")
+                        .callbackData("/RU")
                         .build());
 
         List<InlineKeyboardRow> keyboard = List.of(
@@ -59,6 +64,6 @@ public class ChangeLanguageCommandHandler implements CommandHandler {
 
         message.setReplyMarkup(inlineKeyboardMarkup);
         message.setParseMode("MarkdownV2");
-        telegramClient.execute(message);
+        telegramService.sendMessage(message);
     }
 }

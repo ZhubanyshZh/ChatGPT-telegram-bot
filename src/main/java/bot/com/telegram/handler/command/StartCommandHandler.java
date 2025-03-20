@@ -1,22 +1,23 @@
 package bot.com.telegram.handler.command;
 
+import bot.com.telegram.service.TelegramService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class StartCommandHandler implements CommandHandler {
 
     @Value("${messages.welcome.ru}")
     private String welcomeMessageRu;
+    private final TelegramService telegramService;
 
     @Override
     public boolean canHandle(String message) {
@@ -24,7 +25,7 @@ public class StartCommandHandler implements CommandHandler {
     }
 
     @Override
-    public void handle(Update update, TelegramClient telegramClient) throws TelegramApiException {
+    public void handle(Update update) {
         Long chatId = update.getMessage().getChatId();
 
         SendMessage message = SendMessage.builder()
@@ -47,6 +48,6 @@ public class StartCommandHandler implements CommandHandler {
                 .build();
 
         message.setReplyMarkup(keyboardMarkup);
-        telegramClient.execute(message);
+        telegramService.sendMessage(message);
     }
 }

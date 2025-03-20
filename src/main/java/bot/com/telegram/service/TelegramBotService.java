@@ -1,73 +1,81 @@
 package bot.com.telegram.service;
 
-import bot.com.client.OpenAIClient;
-import bot.com.dto.*;
-import bot.com.telegram.handler.command.CommandHandler;
-import bot.com.telegram.handler.command.CommandRegistry;
-import lombok.SneakyThrows;
+import bot.com.dto.Message;
+import bot.com.telegram.model.Language;
+import bot.com.telegram.model.MessageEntry;
+import bot.com.telegram.model.UserChatHistory;
+import bot.com.telegram.repository.UserChatHistoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
 public class TelegramBotService {
+    private final CommandService commandService;
+    private final AIService aiService;
+    private final TelegramService telegramService;
+    private final UserChatHistoryRepository userChatHistoryRepository;
+    private final String promptContent;
 
-    @Value("${chat-gpt.token}")
-    private String openAiToken;
-    @Value("${chat-gpt.model}")
-    private String model;
-
-    private TelegramClient telegramClient;
-    private OpenAIClient openAIClient;
-    private CommandRegistry commandRegistry;
-
-    public TelegramBotService(@Value("${bot.token}") String botToken,
-                              OpenAIClient openAIClient,
-                              CommandRegistry commandRegistry) {
-        this.telegramClient = new OkHttpTelegramClient(botToken);
-        this.openAIClient = openAIClient;
-        this.commandRegistry = commandRegistry;
+    public TelegramBotService(CommandService commandService,
+                              AIService aiService,
+                              TelegramService telegramService,
+                              UserChatHistoryRepository userChatHistoryRepository,
+                              @Value("${messages.prompt.content}") String promptContent) {
+        this.commandService = commandService;
+        this.aiService = aiService;
+        this.telegramService = telegramService;
+        this.userChatHistoryRepository = userChatHistoryRepository;
+        this.promptContent = promptContent;
     }
 
-    @SneakyThrows
-    public void sendMessage(Update update) {
-        String messageText = update.getMessage().getText();
+    public void handleUpdate(Update update) {
+        try {
+            String chatId = update.getMessage().getChatId().toString();
+            String userMessage = update.getMessage().getText();
 
-        CommandHandler handler = commandRegistry.findHandler(messageText);
-        if (handler != null) {
-            handler.handle(update, telegramClient);
-            return;
+            if (commandService.processCommand(update)) return;
+
+            UserChatHistory history = userChatHistoryRepository
+                    .findById(chatId)
+                    .orElseGet(() -> UserChatHistory.builder()
+                            .chatId(chatId)
+                            .messages(new ArrayList<>())
+                            .currentLanguage(Language.RU)
+                            .build());
+
+            history.getMessages().addAll(
+                    List.of(
+                            new MessageEntry("user", promptContent + history.getCurrentLanguage(), Instant.now()),
+                            new MessageEntry("user", userMessage, Instant.now())
+                    )
+            );
+
+            List<Message> conversation = history.getMessages().stream()
+                    .map(entry -> new Message(entry.getRole(), entry.getContent()))
+                    .toList();
+
+            String responseMessage = aiService.getResponse(conversation);
+            log.info("Ответ от AI: {}", responseMessage);
+
+            history.getMessages().add(new MessageEntry("assistant", responseMessage, Instant.now()));
+            userChatHistoryRepository.save(history);
+
+            telegramService.sendMessage(SendMessage.builder()
+                    .chatId(chatId)
+                    .text(responseMessage)
+                    .build());
+
+        } catch (Exception e) {
+            log.error("Ошибка при обработке сообщения", e);;
         }
-
-        var completionDto = CompletionBodyDto.builder()
-                .model(model)
-                .messages(List.of(Message.builder()
-                        .role("user")
-                        .content(update.getMessage().getText())
-                        .build()))
-                .build();
-
-        log.info("Sending message to DeepInfra: {}", update.getMessage().getText());
-
-        OpenAIResponse response = openAIClient.chat(openAiToken, completionDto);
-
-        SendMessage message = SendMessage.builder()
-                .chatId(update.getMessage().getChatId().toString())
-                .text(response.getChoices().getFirst().getMessage().getContent())
-                .build();
-
-        telegramClient.execute(message);
-        log.info("Received message from DeepInfra: {}", response.getChoices().getFirst().getMessage().getContent());
     }
 }
+

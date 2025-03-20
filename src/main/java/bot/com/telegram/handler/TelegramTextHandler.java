@@ -22,7 +22,7 @@ public class TelegramTextHandler extends TelegramBotHandler<Update> {
                         update.getMessage().getText() + ", Chat ID: " +
                         update.getMessage().getChatId(),
                 update,
-                telegramBotService::sendMessage);
+                telegramBotService::handleUpdate);
     }
 
     @Override
