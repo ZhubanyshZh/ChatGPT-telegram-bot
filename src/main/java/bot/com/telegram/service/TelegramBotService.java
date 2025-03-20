@@ -1,97 +1,81 @@
 package bot.com.telegram.service;
 
-import bot.com.client.OpenAIClient;
-import bot.com.dto.*;
-import lombok.SneakyThrows;
+import bot.com.dto.Message;
+import bot.com.telegram.model.Language;
+import bot.com.telegram.model.MessageEntry;
+import bot.com.telegram.model.UserChatHistory;
+import bot.com.telegram.repository.UserChatHistoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
 public class TelegramBotService {
+    private final CommandService commandService;
+    private final AIService aiService;
+    private final TelegramService telegramService;
+    private final UserChatHistoryRepository userChatHistoryRepository;
+    private final String promptContent;
 
-    @Value("${chat-gpt.token}")
-    private String openAiToken;
-
-    private TelegramClient telegramClient;
-    private OpenAIClient openAIClient;
-
-    public TelegramBotService(@Value("${bot.token}") String botToken, OpenAIClient openAIClient) {
-        this.telegramClient = new OkHttpTelegramClient(botToken);
-        this.openAIClient = openAIClient;
+    public TelegramBotService(CommandService commandService,
+                              AIService aiService,
+                              TelegramService telegramService,
+                              UserChatHistoryRepository userChatHistoryRepository,
+                              @Value("${messages.prompt.content}") String promptContent) {
+        this.commandService = commandService;
+        this.aiService = aiService;
+        this.telegramService = telegramService;
+        this.userChatHistoryRepository = userChatHistoryRepository;
+        this.promptContent = promptContent;
     }
 
-    @SneakyThrows
-    public void sendMessage(Update update) {
-        if(!isFirstMessage(update)) {
-            var header = OpenAIRequestHeader.builder()
-                    .authorization("Bearer " + openAiToken)
-                    .contentType("application/json")
-                    .build();
-            var completionDto = CompletionBodyDto.builder()
-                    .model(OpenAIModel.GPTFOUR.getModelName())
-                    .messages(List.of(Message.builder()
-                                    .role("user")
-                                    .content(update.getMessage().getText())
-                                    .build()))
-                    .build();
-            log.info("Sending message to OpenAI: {}", update.getMessage().getText());
-            OpenAIResponse response = openAIClient.chat(header, completionDto);
-            SendMessage message = SendMessage.builder()
-                    .chatId(update.getMessage().getChatId().toString())
-                    .text(response.getChoices().getFirst().getMessage().getContent())
-                    .build();
+    public void handleUpdate(Update update) {
+        try {
+            String chatId = update.getMessage().getChatId().toString();
+            String userMessage = update.getMessage().getText();
 
-            telegramClient.execute(message);
-            log.info("Received message from OpenAI: {}", response.getChoices().getFirst().getMessage().getContent());
+            if (commandService.processCommand(update)) return;
+
+            UserChatHistory history = userChatHistoryRepository
+                    .findById(chatId)
+                    .orElseGet(() -> UserChatHistory.builder()
+                            .chatId(chatId)
+                            .messages(new ArrayList<>())
+                            .currentLanguage(Language.RU)
+                            .build());
+
+            history.getMessages().addAll(
+                    List.of(
+                            new MessageEntry("user", promptContent + history.getCurrentLanguage(), Instant.now()),
+                            new MessageEntry("user", userMessage, Instant.now())
+                    )
+            );
+
+            List<Message> conversation = history.getMessages().stream()
+                    .map(entry -> new Message(entry.getRole(), entry.getContent()))
+                    .toList();
+
+            String responseMessage = aiService.getResponse(conversation);
+            log.info("Ответ от AI: {}", responseMessage);
+
+            history.getMessages().add(new MessageEntry("assistant", responseMessage, Instant.now()));
+            userChatHistoryRepository.save(history);
+
+            telegramService.sendMessage(SendMessage.builder()
+                    .chatId(chatId)
+                    .text(responseMessage)
+                    .build());
+
+        } catch (Exception e) {
+            log.error("Ошибка при обработке сообщения", e);;
         }
-    }
-
-    private SendMessage createReplyKeyboard(Long chatId) {
-        SendMessage message = SendMessage.builder()
-                .chatId(chatId)
-                .text("Выберите команду:")
-                .build();
-
-        ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()
-                .resizeKeyboard(true)
-                .build();
-
-        List<KeyboardRow> keyboard = new ArrayList<>();
-
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add("Привет");
-        row1.add("Как дела?");
-
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add("Помощь");
-
-        keyboard.add(row1);
-        keyboard.add(row2);
-
-        keyboardMarkup.setKeyboard(keyboard);
-        message.setReplyMarkup(keyboardMarkup);
-
-        return message;
-    }
-
-    @SneakyThrows
-    private boolean isFirstMessage(Update update) {
-        if("/start".equals(update.getMessage().getText())) {
-            SendMessage message = createReplyKeyboard(update.getMessage().getChatId());
-            telegramClient.execute(message);
-            return true;
-        }
-        return false;
     }
 }
+
