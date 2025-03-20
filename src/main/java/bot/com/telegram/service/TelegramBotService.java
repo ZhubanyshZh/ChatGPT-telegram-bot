@@ -22,7 +22,8 @@ public class TelegramBotService {
 
     @Value("${chat-gpt.token}")
     private String openAiToken;
-
+    @Value("${chat-gpt.model}")
+    private String model;
     private TelegramClient telegramClient;
     private OpenAIClient openAIClient;
 
@@ -33,27 +34,26 @@ public class TelegramBotService {
 
     @SneakyThrows
     public void sendMessage(Update update) {
-        if(!isFirstMessage(update)) {
-            var header = OpenAIRequestHeader.builder()
-                    .authorization("Bearer " + openAiToken)
-                    .contentType("application/json")
-                    .build();
+        if (!isFirstMessage(update)) {
             var completionDto = CompletionBodyDto.builder()
-                    .model(OpenAIModel.GPTFOUR.getModelName())
+                    .model(model) // DeepInfra поддерживает LLAMA-3
                     .messages(List.of(Message.builder()
-                                    .role("user")
-                                    .content(update.getMessage().getText())
-                                    .build()))
+                            .role("user")
+                            .content(update.getMessage().getText())
+                            .build()))
                     .build();
-            log.info("Sending message to OpenAI: {}", update.getMessage().getText());
-            OpenAIResponse response = openAIClient.chat(header, completionDto);
+
+            log.info("Sending message to DeepInfra: {}", update.getMessage().getText());
+
+            OpenAIResponse response = openAIClient.chat(openAiToken, completionDto);
+
             SendMessage message = SendMessage.builder()
                     .chatId(update.getMessage().getChatId().toString())
                     .text(response.getChoices().getFirst().getMessage().getContent())
                     .build();
 
             telegramClient.execute(message);
-            log.info("Received message from OpenAI: {}", response.getChoices().getFirst().getMessage().getContent());
+            log.info("Received message from DeepInfra: {}", response.getChoices().getFirst().getMessage().getContent());
         }
     }
 
