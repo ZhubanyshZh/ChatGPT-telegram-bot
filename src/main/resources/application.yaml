@@ -7,8 +7,14 @@ telegram:
     pool-size: 2
 
 chat-gpt:
-  chat-url: "https://api.openai.com/v1/chat/completions"
-  token: "gpt-token"
+  chat-url: "https://api.deepinfra.com/v1/openai/chat/completions"
+  token: "R8HNIilRSlrE51rajd09rbupcqhbK2Gw"
+  model: "deepseek-ai/DeepSeek-R1-Turbo"
+spring:
+  data:
+    mongodb:
+      uri: mongodb://admin:password@localhost:27017/telegram_bot_db
+      database: telegram_bot_db
 
 messages:
   welcome:
