@@ -22,6 +22,12 @@ public class TelegramBotService {
 
     @Value("${chat-gpt.token}")
     private String openAiToken;
+    @Value("${messages.welcome.ru}")
+    private String welcomeMessageRu;
+    @Value("${messages.welcome.kz}")
+    private String welcomeMessageKz;
+    @Value("${messages.welcome.en}")
+    private String welcomeMessageEn;
 
     private TelegramClient telegramClient;
     private OpenAIClient openAIClient;
@@ -60,7 +66,7 @@ public class TelegramBotService {
     private SendMessage createReplyKeyboard(Long chatId) {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text("Выберите команду:")
+                .text(welcomeMessageRu)
                 .build();
 
         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()
