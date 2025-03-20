@@ -4,10 +4,12 @@ import bot.com.telegram.model.Language;
 import bot.com.telegram.repository.UserChatHistoryRepository;
 import bot.com.telegram.service.TelegramService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SetConcreteLanguageCommandHandler implements CommandHandler {
@@ -17,13 +19,13 @@ public class SetConcreteLanguageCommandHandler implements CommandHandler {
 
     @Override
     public boolean canHandle(String message) {
-        return "RU".equals(message) || "EN".equals(message) || "KZ".equals(message);
+        return "/RU".equals(message) || "/EN".equals(message) || "/KZ".equals(message);
     }
 
     @Override
     public void handle(Update update) {
-        var chatId = update.getMessage().getChatId().toString();
-        Language.getByName(update.getMessage().getText().trim())
+        var chatId = update.getCallbackQuery().getMessage().getChatId().toString();
+        Language.getByName(update.getCallbackQuery().getData().substring(1).trim())
                 .ifPresentOrElse(lang ->
                         userChatHistoryRepository.findById(chatId)
                                 .ifPresent(

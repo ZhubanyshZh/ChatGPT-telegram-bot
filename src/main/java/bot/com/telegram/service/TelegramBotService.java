@@ -41,7 +41,7 @@ public class TelegramBotService {
             String chatId = update.getMessage().getChatId().toString();
             String userMessage = update.getMessage().getText();
 
-            if (commandService.processCommand(update)) return;
+            if (commandService.processCommand(update, update.getMessage().getText())) return;
 
             UserChatHistory history = userChatHistoryRepository
                     .findById(chatId)
@@ -76,6 +76,15 @@ public class TelegramBotService {
         } catch (Exception e) {
             log.error("Ошибка при обработке сообщения", e);;
         }
+    }
+
+    public void handleCallBackQuery(Update update) {
+        if(commandService.processCommand(update, update.getCallbackQuery().getData())) return;
+
+        telegramService.sendMessage(SendMessage.builder()
+                .chatId(update.getCallbackQuery().getMessage().getChatId().toString())
+                .text("Error Callback query")
+                .build());
     }
 }
 
