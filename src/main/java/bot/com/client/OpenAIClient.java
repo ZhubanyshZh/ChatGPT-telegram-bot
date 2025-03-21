@@ -3,9 +3,9 @@ package bot.com.client;
 import bot.com.dto.CompletionBodyDto;
 import bot.com.dto.OpenAIResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @FeignClient(name = "deepinfra-client", url = "${chat-gpt.chat-url}")
 public interface OpenAIClient {

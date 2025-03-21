@@ -15,8 +15,8 @@ public class CommandService {
     }
 
     @SneakyThrows
-    public boolean processCommand(Update update) {
-        String userMessage = update.getMessage().getText();
+    public boolean processCommand(Update update,String userMessage) {
+
         CommandHandler handler = commandRegistry.findHandler(userMessage);
         if (handler != null) {
             handler.handle(update);

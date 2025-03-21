@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class Message {
 
@@ -17,4 +16,8 @@ public class Message {
 
     @JsonProperty("content")
     private String content;
+    public Message(String role, String content) { // Добавил public
+        this.role = role;
+        this.content = content;
+    }
 }
