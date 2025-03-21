@@ -15,6 +15,6 @@ public class CommandRegistry {
         return commandHandlers.stream()
                 .filter(handler -> handler.canHandle(message))
                 .findFirst()
-                .orElse(null);
+                .orElseGet(() -> null);
     }
 }
