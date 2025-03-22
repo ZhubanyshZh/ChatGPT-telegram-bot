@@ -1,4 +1,4 @@
-package bot.com.telegram.handler.callbackquery;
+package bot.com.handler.callbackquery;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

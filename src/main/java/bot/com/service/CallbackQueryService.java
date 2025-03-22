@@ -1,7 +1,7 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
-import bot.com.telegram.handler.callbackquery.CallBackQueryHandler;
-import bot.com.telegram.handler.callbackquery.CallBackQueryRegistry;
+import bot.com.handler.callbackquery.CallBackQueryHandler;
+import bot.com.handler.callbackquery.CallBackQueryRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

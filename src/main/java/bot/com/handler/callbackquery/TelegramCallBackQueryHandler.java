@@ -1,10 +1,11 @@
-package bot.com.telegram.handler.callbackquery;
+package bot.com.handler.callbackquery;
 
 import bot.com.handler.TelegramBotHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import bot.com.service.CallbackQueryService;
 
 @Slf4j
 @Component

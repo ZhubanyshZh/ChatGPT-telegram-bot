@@ -1,4 +1,4 @@
-package bot.com.telegram.handler.callbackquery;
+package bot.com.handler.callbackquery;
 
 import bot.com.model.Language;
 import bot.com.model.UserChatHistory;

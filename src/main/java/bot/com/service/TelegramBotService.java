@@ -1,10 +1,10 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
 import bot.com.dto.Message;
-import bot.com.telegram.model.Language;
-import bot.com.telegram.model.MessageEntry;
-import bot.com.telegram.model.UserChatHistory;
-import bot.com.telegram.repository.UserChatHistoryRepository;
+import bot.com.model.Language;
+import bot.com.model.MessageEntry;
+import bot.com.model.UserChatHistory;
+import bot.com.repository.UserChatHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

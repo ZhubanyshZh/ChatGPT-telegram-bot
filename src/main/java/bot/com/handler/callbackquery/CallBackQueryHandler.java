@@ -1,4 +1,4 @@
-package bot.com.telegram.handler.callbackquery;
+package bot.com.handler.callbackquery;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 
