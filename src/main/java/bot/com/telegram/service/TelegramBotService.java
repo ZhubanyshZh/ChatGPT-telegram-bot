@@ -1,8 +1,6 @@
 package bot.com.telegram.service;
 
-import bot.com.client.TelegramFeignClient;
 import bot.com.dto.Message;
-import bot.com.dto.TelegramFileResponse;
 import bot.com.telegram.model.Language;
 import bot.com.telegram.model.MessageEntry;
 import bot.com.telegram.model.UserChatHistory;
@@ -10,17 +8,11 @@ import bot.com.telegram.repository.UserChatHistoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -29,16 +21,16 @@ public class TelegramBotService {
     private final AIService aiService;
     private final TelegramService telegramService;
     private final String promptContent;
-
+    private final CommandService commandService;
     public TelegramBotService(UserChatHistoryRepository userChatHistoryRepository,
                               AIService aiService,
                               TelegramService telegramService,
-                              @Value("${messages.prompt.content}") String promptContent) {
+                              @Value("${messages.prompt.content}") String promptContent,CommandService commandService) {
         this.userChatHistoryRepository = userChatHistoryRepository;
         this.aiService = aiService;
         this.telegramService = telegramService;
         this.promptContent = promptContent;
-
+        this.commandService = commandService;
     }
 
     public UserChatHistory getUserChatHistory(String chatId) {
@@ -76,7 +68,14 @@ public class TelegramBotService {
                 .build());
     }
 
+    public void handleCallBackQuery(Update update) {
+        if(commandService.processCommand(update, update.getCallbackQuery().getData())) return;
 
+        telegramService.sendMessage(SendMessage.builder()
+                .chatId(update.getCallbackQuery().getMessage().getChatId().toString())
+                .text("Error Callback query")
+                .build());
+    }
 
 
 

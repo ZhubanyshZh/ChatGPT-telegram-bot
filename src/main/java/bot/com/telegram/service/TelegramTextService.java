@@ -1,13 +1,9 @@
 package bot.com.telegram.service;
 
-import bot.com.client.OpenAIClient;
-import bot.com.telegram.handler.command.CommandHandler;
-import bot.com.telegram.handler.command.CommandRegistry;
 import bot.com.telegram.model.UserChatHistory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 @Slf4j
 @Service
