@@ -2,11 +2,12 @@ package bot.com.service;
 
 import bot.com.file.FileService;
 import bot.com.model.UserChatHistory;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,20 +16,17 @@ import java.nio.file.Path;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TelegramAudioService {
+
+    @Value("${audio.language}")
+    private String languageCode;
 
     private final TelegramService telegramService;
     private final GoogleSpeechService googleSpeechService;
     private final FileService fileService;
-    @Value("${audio.language}")
-    private String languageCode;
-    private TelegramBotService telegramBotService;
-    public TelegramAudioService(TelegramService telegramService, GoogleSpeechService googleSpeechService, FileService fileService,TelegramBotService telegramBotService) {
-        this.telegramService = telegramService;
-        this.googleSpeechService = googleSpeechService;
-        this.fileService = fileService;
-        this.telegramBotService = telegramBotService;
-    }
+    private final UserChatHistoryService userChatHistoryService;
+    private final AIService aiService;
 
     public void handleAudioMessage(Update update) {
         try {
@@ -50,10 +48,10 @@ public class TelegramAudioService {
             File wavFile = convertOggToWav(oggPath.toFile());
 
             String recognizedText = googleSpeechService.recognizeAudio(wavFile.toPath(), languageCode);
-            UserChatHistory history = telegramBotService.getUserChatHistory(chatId);
-            telegramBotService.addUserMessageToHistory(history, "User uploaded: " + recognizedText + "\n");
-            String responseMessage = telegramBotService.generateResponse(history);
-            telegramBotService.saveAndSendResponse(history, responseMessage);
+            UserChatHistory history = userChatHistoryService.getUserChatHistory(chatId);
+            userChatHistoryService.addUserMessageToHistory(history, "User uploaded: " + recognizedText + "\n");
+            String responseMessage = aiService.generateResponse(history);
+            userChatHistoryService.saveAndSendResponse(history, responseMessage);
             Files.deleteIfExists(oggPath);
             wavFile.delete();
 

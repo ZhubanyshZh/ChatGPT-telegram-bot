@@ -3,6 +3,7 @@ package bot.com.service;
 import bot.com.file.FileProcessingService;
 import bot.com.file.FileService;
 import bot.com.model.UserChatHistory;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,21 +11,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TelegramDocumentService {
-    private final TelegramBotService telegramBotService;
+
     private final TelegramService telegramService;
     private final FileProcessingService fileProcessingService;
     private final FileService fileService;
-
-    public TelegramDocumentService(TelegramBotService telegramBotService,
-                                   TelegramService telegramService,
-                                   FileProcessingService fileProcessingService,
-                                   FileService fileService) {
-        this.telegramBotService = telegramBotService;
-        this.telegramService = telegramService;
-        this.fileProcessingService = fileProcessingService;
-        this.fileService = fileService;
-    }
+    private final UserChatHistoryService userChatHistoryService;
+    private final AIService aiService;
 
     public void handleDocumentMessage(Update update) {
         try {
@@ -50,10 +44,10 @@ public class TelegramDocumentService {
             }
 
             // GPT-обработка файла
-            UserChatHistory history = telegramBotService.getUserChatHistory(chatId);
-            telegramBotService.addUserMessageToHistory(history, "User uploaded: " + fileName + "\n" + fileContent);
-            String responseMessage = telegramBotService.generateResponse(history);
-            telegramBotService.saveAndSendResponse(history, responseMessage);
+            UserChatHistory history = userChatHistoryService.getUserChatHistory(chatId);
+            userChatHistoryService.addUserMessageToHistory(history, "User uploaded: " + fileName + "\n" + fileContent);
+            String responseMessage = aiService.generateResponse(history);
+            userChatHistoryService.saveAndSendResponse(history, responseMessage);
 
         } catch (Exception e) {
             log.error("Ошибка при обработке документа: ", e);
