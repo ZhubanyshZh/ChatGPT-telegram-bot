@@ -15,7 +15,11 @@ spring:
   data:
     mongodb:
       uri: mongodb://admin:password@localhost:27017/telegram_bot_db?authSource=admin
-
+google:
+  credentials:
+    path: token
+audio:
+  language: "ru-RU"
 messages:
   welcome:
     ru: |

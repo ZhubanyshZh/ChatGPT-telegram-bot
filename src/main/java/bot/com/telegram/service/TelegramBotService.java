@@ -11,7 +11,6 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,68 +20,55 @@ import java.util.List;
 @RefreshScope
 public class TelegramBotService {
 
-    @Value("${telegram.parse-mode:MarkdownV2}")
-    private String textParseMode;
-
-    private final CommandService commandService;
+    private final UserChatHistoryRepository userChatHistoryRepository;
     private final AIService aiService;
     private final TelegramService telegramService;
-    private final UserChatHistoryRepository userChatHistoryRepository;
     private final String promptContent;
-
-    public TelegramBotService(CommandService commandService,
+    private final CommandService commandService;
+    public TelegramBotService(UserChatHistoryRepository userChatHistoryRepository,
                               AIService aiService,
                               TelegramService telegramService,
-                              UserChatHistoryRepository userChatHistoryRepository,
-                              @Value("${messages.prompt.content}") String promptContent) {
-        this.commandService = commandService;
+                              @Value("${messages.prompt.content}") String promptContent,CommandService commandService) {
+        this.userChatHistoryRepository = userChatHistoryRepository;
         this.aiService = aiService;
         this.telegramService = telegramService;
-        this.userChatHistoryRepository = userChatHistoryRepository;
         this.promptContent = promptContent;
+        this.commandService = commandService;
     }
 
-    public void handleUpdate(Update update) {
-        try {
-            String chatId = update.getMessage().getChatId().toString();
-            String userMessage = update.getMessage().getText();
+    public UserChatHistory getUserChatHistory(String chatId) {
+        return userChatHistoryRepository.findById(chatId)
+                .orElseGet(() -> UserChatHistory.builder()
+                        .chatId(chatId)
+                        .messages(new ArrayList<>())
+                        .currentLanguage(Language.RU)
+                        .build());
+    }
 
-            if (commandService.processCommand(update, update.getMessage().getText())) return;
+    public void addUserMessageToHistory(UserChatHistory history, String userMessage) {
+        history.getMessages().addAll(List.of(
+                new MessageEntry("user", promptContent + history.getCurrentLanguage(), Instant.now()),
+                new MessageEntry("user", userMessage, Instant.now())
+        ));
+    }
 
-            UserChatHistory history = userChatHistoryRepository
-                    .findById(chatId)
-                    .orElseGet(() -> UserChatHistory.builder()
-                            .chatId(chatId)
-                            .messages(new ArrayList<>())
-                            .currentLanguage(Language.RU)
-                            .build());
+    public String generateResponse(UserChatHistory history) {
+        List<Message> conversation = history.getMessages().stream()
+                .map(entry -> new Message(entry.getRole(), entry.getContent()))
+                .toList();
+        return aiService.getResponse(conversation);
+    }
 
-            history.getMessages().addAll(
-                    List.of(
-                            new MessageEntry("user", promptContent + history.getCurrentLanguage(), Instant.now()),
-                            new MessageEntry("user", userMessage, Instant.now())
-                    )
-            );
+    public void saveAndSendResponse(UserChatHistory history, String responseMessage) {
+        log.info("Ответ от AI: {}", responseMessage);
 
-            List<Message> conversation = history.getMessages().stream()
-                    .map(entry -> new Message(entry.getRole(), entry.getContent()))
-                    .toList();
+        history.getMessages().add(new MessageEntry("assistant", responseMessage, Instant.now()));
+        userChatHistoryRepository.save(history);
 
-            String responseMessage = aiService.getResponse(conversation);
-            log.info("Ответ от AI: {}", responseMessage);
-
-            history.getMessages().add(new MessageEntry("assistant", responseMessage, Instant.now()));
-            userChatHistoryRepository.save(history);
-
-            telegramService.sendMessage(SendMessage.builder()
-                    .chatId(chatId)
-                    .text(responseMessage)
-                    .parseMode(textParseMode)
-                    .build());
-
-        } catch (Exception e) {
-            log.error("Ошибка при обработке сообщения", e);;
-        }
+        telegramService.sendMessage(SendMessage.builder()
+                .chatId(history.getChatId())
+                .text(responseMessage)
+                .build());
     }
 
     public void handleCallBackQuery(Update update) {
