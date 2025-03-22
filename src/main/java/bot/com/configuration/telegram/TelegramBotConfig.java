@@ -1,6 +1,6 @@
 package bot.com.configuration.telegram;
 
-import bot.com.telegram.consumer.TelegramBotConsumer;
+import bot.com.listener.TelegramBotConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
