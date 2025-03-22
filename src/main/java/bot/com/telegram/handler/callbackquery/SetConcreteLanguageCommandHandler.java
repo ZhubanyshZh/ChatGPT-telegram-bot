@@ -1,4 +1,4 @@
-package bot.com.telegram.handler.command;
+package bot.com.telegram.handler.callbackquery;
 
 import bot.com.telegram.model.Language;
 import bot.com.telegram.model.UserChatHistory;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SetConcreteLanguageCommandHandler implements CommandHandler {
+public class SetConcreteLanguageCommandHandler implements CallBackQueryHandler {
 
     private final UserChatHistoryRepository userChatHistoryRepository;
     private final TelegramService telegramService;
