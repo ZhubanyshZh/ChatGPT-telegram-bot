@@ -4,6 +4,7 @@ import bot.com.client.OpenAIClient;
 import bot.com.dto.CompletionBodyDto;
 import bot.com.dto.Message;
 import bot.com.dto.OpenAIResponse;
+import bot.com.model.UserChatHistory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,13 @@ public class AIService {
         OpenAIResponse response = openAIClient.chat(openAiToken, completionDto);
         return response.getChoices().getFirst().getMessage().getContent()
                 .replaceAll("(?s)<think>.*?</think>\\s*", ""); // Удаление тега
+    }
+
+    public String generateResponse(UserChatHistory history) {
+        List<Message> conversation = history.getMessages().stream()
+                .map(entry -> new Message(entry.getRole(), entry.getContent()))
+                .toList();
+        return getResponse(conversation);
     }
 }
 

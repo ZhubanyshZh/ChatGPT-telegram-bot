@@ -4,6 +4,8 @@ bot:
 
 telegram:
   executor:
+    wait-message:
+      pool-size: 1
     pool-size: 2
   parse-mode: "MarkdownV2"
 

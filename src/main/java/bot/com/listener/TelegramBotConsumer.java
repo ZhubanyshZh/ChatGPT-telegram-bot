@@ -1,6 +1,7 @@
 package bot.com.listener;
 
 import bot.com.handler.TelegramBotHandler;
+import bot.com.service.WaitAnswerMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
@@ -13,11 +14,15 @@ import java.util.List;
 public class TelegramBotConsumer implements LongPollingUpdateConsumer {
 
     private final List<TelegramBotHandler<Update>> telegramBotHandlers;
+    private final WaitAnswerMessageService waitAnswerMessageService;
 
     @Override
     public void consume(List<Update> list) {
         list.forEach(update -> telegramBotHandlers.forEach(handler -> {
             if(handler.isApplicable(update)) {
+                if(!update.hasCallbackQuery() || (update.hasMessage() && update.getMessage().getText().startsWith("/"))){
+                    waitAnswerMessageService.sendWaitAnswerMessage(update.getMessage().getChatId());
+                }
                 handler.handle(update);
             }
         }));
