@@ -20,6 +20,9 @@ import java.util.List;
 @RefreshScope
 public class TelegramBotService {
 
+    @Value("${telegram.parse-mode}")
+    private String parseMode;
+
     private final UserChatHistoryRepository userChatHistoryRepository;
     private final AIService aiService;
     private final TelegramService telegramService;
@@ -68,6 +71,7 @@ public class TelegramBotService {
         telegramService.sendMessage(SendMessage.builder()
                 .chatId(history.getChatId())
                 .text(responseMessage)
+                .parseMode(parseMode)
                 .build());
     }
 

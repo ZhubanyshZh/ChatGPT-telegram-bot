@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### resources ###
+src/main/resources/reliable-aloe-454416-a0-9016c593d665.json
