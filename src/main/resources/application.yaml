@@ -1,6 +1,6 @@
 bot:
   name: ZanBot
-  token: "7747123654:AAHEjlR_rpjCQgnTyfnrbu41JcB7yCfzp_U"
+  token: "token"
 
 telegram:
   executor:
