@@ -1,19 +1,16 @@
-package bot.com.telegram.handler;
+package bot.com.handler;
 
-import bot.com.handler.TelegramBotHandler;
-import bot.com.telegram.service.TelegramBotService;
-import bot.com.telegram.service.TelegramDocumentService;
+import bot.com.service.TelegramAudioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
-public class TelegramDocumentHandler extends TelegramBotHandler<Update> {
-    private final TelegramDocumentService telegramBotService;
+public class TelegramAudioHandler extends TelegramBotHandler<Update> {
+    private final TelegramAudioService telegramBotService;
 
     @Override
     @Async("telegramExecutor")
@@ -22,11 +19,11 @@ public class TelegramDocumentHandler extends TelegramBotHandler<Update> {
                         update.getMessage().getText() + ", Chat ID: " +
                         update.getMessage().getChatId(),
                 update,
-                telegramBotService::handleDocumentMessage);
+                telegramBotService::handleAudioMessage);
     }
 
     @Override
     public boolean isApplicable(Update update) {
-        return update.hasMessage() && update.getMessage().hasDocument();
+        return update.hasMessage() && (update.getMessage().hasVoice() || update.getMessage().hasAudio());
     }
 }

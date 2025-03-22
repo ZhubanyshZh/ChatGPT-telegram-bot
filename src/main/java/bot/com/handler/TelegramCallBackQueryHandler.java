@@ -1,7 +1,6 @@
-package bot.com.telegram.handler;
+package bot.com.handler;
 
-import bot.com.handler.TelegramBotHandler;
-import bot.com.telegram.service.TelegramBotService;
+import bot.com.service.TelegramBotService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

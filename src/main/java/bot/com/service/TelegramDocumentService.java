@@ -1,20 +1,12 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
-import bot.com.client.TelegramFeignClient;
 import bot.com.file.FileProcessingService;
 import bot.com.file.FileService;
-import bot.com.telegram.model.UserChatHistory;
-import lombok.Value;
+import bot.com.model.UserChatHistory;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Service

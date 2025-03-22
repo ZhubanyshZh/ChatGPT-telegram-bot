@@ -1,4 +1,4 @@
-package bot.com.telegram.handler.command;
+package bot.com.handler.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 

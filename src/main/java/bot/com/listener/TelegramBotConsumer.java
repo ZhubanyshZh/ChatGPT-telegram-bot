@@ -1,4 +1,4 @@
-package bot.com.telegram.consumer;
+package bot.com.listener;
 
 import bot.com.handler.TelegramBotHandler;
 import lombok.RequiredArgsConstructor;

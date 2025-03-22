@@ -1,6 +1,6 @@
-package bot.com.telegram.handler.command;
+package bot.com.handler.command;
 
-import bot.com.telegram.service.TelegramService;
+import bot.com.service.TelegramService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

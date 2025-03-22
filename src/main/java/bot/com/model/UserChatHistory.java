@@ -1,4 +1,4 @@
-package bot.com.telegram.model;
+package bot.com.model;
 
 import lombok.Builder;
 import lombok.Data;

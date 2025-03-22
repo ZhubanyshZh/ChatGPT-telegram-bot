@@ -1,7 +1,7 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
 import bot.com.file.FileService;
-import bot.com.telegram.model.UserChatHistory;
+import bot.com.model.UserChatHistory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

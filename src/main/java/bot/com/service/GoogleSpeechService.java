@@ -1,4 +1,4 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.speech.v1.*;

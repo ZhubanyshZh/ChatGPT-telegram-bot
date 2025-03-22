@@ -1,9 +1,9 @@
-package bot.com.telegram.handler.command;
+package bot.com.handler.command;
 
-import bot.com.telegram.model.Language;
-import bot.com.telegram.model.UserChatHistory;
-import bot.com.telegram.repository.UserChatHistoryRepository;
-import bot.com.telegram.service.TelegramService;
+import bot.com.model.Language;
+import bot.com.model.UserChatHistory;
+import bot.com.repository.UserChatHistoryRepository;
+import bot.com.service.TelegramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

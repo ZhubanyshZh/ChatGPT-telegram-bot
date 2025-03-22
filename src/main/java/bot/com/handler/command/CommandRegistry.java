@@ -1,4 +1,4 @@
-package bot.com.telegram.handler.command;
+package bot.com.handler.command;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

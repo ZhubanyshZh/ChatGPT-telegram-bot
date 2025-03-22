@@ -1,7 +1,7 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
-import bot.com.telegram.handler.command.CommandHandler;
-import bot.com.telegram.handler.command.CommandRegistry;
+import bot.com.handler.command.CommandHandler;
+import bot.com.handler.command.CommandRegistry;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;

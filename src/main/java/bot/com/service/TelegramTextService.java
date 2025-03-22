@@ -1,6 +1,6 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
-import bot.com.telegram.model.UserChatHistory;
+import bot.com.model.UserChatHistory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;

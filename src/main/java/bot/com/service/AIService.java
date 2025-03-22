@@ -1,4 +1,4 @@
-package bot.com.telegram.service;
+package bot.com.service;
 
 import bot.com.client.OpenAIClient;
 import bot.com.dto.CompletionBodyDto;
