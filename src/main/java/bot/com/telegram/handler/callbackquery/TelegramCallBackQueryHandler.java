@@ -1,7 +1,7 @@
-package bot.com.telegram.handler;
+package bot.com.telegram.handler.callbackquery;
 
 import bot.com.handler.TelegramBotHandler;
-import bot.com.telegram.service.TelegramBotService;
+import bot.com.telegram.service.CallbackQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 public class TelegramCallBackQueryHandler extends TelegramBotHandler<Update> {
 
-    private final TelegramBotService telegramBotService;
+    private final CallbackQueryService callbackQueryService;
 
     @Override
     public void handle(Update update) {
@@ -20,7 +20,7 @@ public class TelegramCallBackQueryHandler extends TelegramBotHandler<Update> {
                         update.getCallbackQuery().getData() + ", Chat ID: " +
                         update.getCallbackQuery().getMessage().getChatId(),
                 update,
-                telegramBotService::handleCallBackQuery);
+                callbackQueryService::handleCallBackQuery);
     }
 
     @Override

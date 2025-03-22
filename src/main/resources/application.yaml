@@ -1,6 +1,6 @@
 bot:
-  name: TGBotWithSpringBot
-  token: "7712287472:AAGqkJAhSHSZ7RNbAdUtv0JQu1PvpAHtMhQ"
+  name: ZanBot
+  token: "7712287472:AAE3b2XSYqOvuK8PgU8lMEgU545EgYDlIlA"
 
 telegram:
   executor:
