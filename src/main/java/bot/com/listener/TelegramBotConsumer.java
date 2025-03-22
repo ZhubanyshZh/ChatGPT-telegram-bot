@@ -20,7 +20,7 @@ public class TelegramBotConsumer implements LongPollingUpdateConsumer {
     public void consume(List<Update> list) {
         list.forEach(update -> telegramBotHandlers.forEach(handler -> {
             if(handler.isApplicable(update)) {
-                if(!update.hasCallbackQuery() || (update.hasMessage() && update.getMessage().getText().startsWith("/"))){
+                if(!update.hasCallbackQuery()){
                     waitAnswerMessageService.sendWaitAnswerMessage(update.getMessage().getChatId());
                 }
                 handler.handle(update);

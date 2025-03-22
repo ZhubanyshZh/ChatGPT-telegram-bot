@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CallbackQueryService {
@@ -24,9 +26,9 @@ public class CallbackQueryService {
     }
 
     private boolean processCallbackQuery(Update update, String userMessage) {
-        CallBackQueryHandler handler = callBackQueryRegistry.findHandler(userMessage);
-        if (handler != null) {
-            handler.handle(update);
+        List<CallBackQueryHandler> handlers = callBackQueryRegistry.findHandler(userMessage);
+        if (handlers != null) {
+            handlers.forEach(handler -> handler.handle(update));
             return true;
         }
         return false;

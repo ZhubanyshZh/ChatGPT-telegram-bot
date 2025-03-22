@@ -46,12 +46,6 @@ public class SetConcreteLanguageCommandHandler implements CallBackQueryHandler {
                                                 );
                                             }
                                     );
-                            telegramService.sendMessage(
-                                    SendMessage.builder()
-                                            .chatId(chatId)
-                                            .text("Язык успешно изменен")
-                                            .build()
-                            );
                         }
                         , () -> {
                             var errorLangMessage = SendMessage.builder()
