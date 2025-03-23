@@ -2,6 +2,7 @@ package bot.com.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
@@ -13,7 +14,7 @@ public class WaitAnswerMessageService {
 
     private final TelegramService telegramService;
 
-//    @Async("waitMessageExecutor")
+    @Async("waitMessageExecutor")
     public void sendWaitAnswerMessage(Long chatId) {
         SendChatAction chatAction = SendChatAction.builder()
                 .chatId(chatId.toString())
