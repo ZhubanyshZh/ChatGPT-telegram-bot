@@ -3,6 +3,8 @@ bot:
   token: "token"
 
 telegram:
+  bot:
+    delete-callback-query: true
   executor:
     wait-message:
       pool-size: 1

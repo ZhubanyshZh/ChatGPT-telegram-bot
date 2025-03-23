@@ -32,7 +32,8 @@ public class AIService {
 
         OpenAIResponse response = openAIClient.chat(openAiToken, completionDto);
         return response.getChoices().getFirst().getMessage().getContent()
-                .replaceAll("(?s)<think>.*?</think>\\s*", ""); // Удаление тега
+                .replaceAll("(?s)<think>.*?</think>\\s*", "")
+                .replaceAll(".*?</think>", ""); // Удаление тега
     }
 
     public String generateResponse(UserChatHistory history) {

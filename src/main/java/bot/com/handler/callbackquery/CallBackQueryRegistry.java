@@ -11,10 +11,9 @@ public class CallBackQueryRegistry {
 
     private final List<CallBackQueryHandler> callBackQueryHandlers;
 
-    public CallBackQueryHandler findHandler(String message) {
+    public List<CallBackQueryHandler> findHandler(String message) {
         return callBackQueryHandlers.stream()
                 .filter(handler -> handler.canHandle(message))
-                .findFirst()
-                .orElseGet(() -> null);
+                .toList();
     }
 }
