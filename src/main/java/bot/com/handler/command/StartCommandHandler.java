@@ -39,7 +39,7 @@ public class StartCommandHandler implements CommandHandler {
         keyboardRow1.add("Сменить язык");
         keyboardRow1.add("Помощь");
         var keyboardRow2 = new KeyboardRow();
-        keyboardRow2.add("Сбросить все предыдущие сообщения");
+        keyboardRow2.add("Сбросить контекст");
         keyboards.add(keyboardRow1);
         keyboards.add(keyboardRow2);
         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()
