@@ -37,7 +37,7 @@ public class StartCommandHandler implements CommandHandler {
         var keyboards = new ArrayList<KeyboardRow>();
         var keyboardRow1 = new KeyboardRow();
         keyboardRow1.add("Сменить язык");
-        keyboardRow1.add("Помощь");
+        keyboardRow1.add("О боте");
         var keyboardRow2 = new KeyboardRow();
         keyboardRow2.add("Сбросить контекст");
         keyboards.add(keyboardRow1);
