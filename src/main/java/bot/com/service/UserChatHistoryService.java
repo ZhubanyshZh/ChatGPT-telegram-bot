@@ -59,4 +59,8 @@ public class UserChatHistoryService {
     private UserChatHistory saveUserChatHistory(UserChatHistory history) {
         return userChatHistoryRepository.save(history);
     }
+
+    public void resetUserChatHistory(String chatId) {
+        userChatHistoryRepository.deleteById(chatId);
+    }
 }
